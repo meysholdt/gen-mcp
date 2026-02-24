@@ -25,7 +25,7 @@
     command: |
       REPO_DIR=/workspaces/$(basename "{{.Parameters.repo_name}}") &&
       cd "$REPO_DIR" &&
-      curl -fsSL https://raw.githubusercontent.com/stefanwille/openapi-generator-typescript-example/master/json-placeholder-api.yaml -o json-placeholder-api.yaml
+      curl -fsSL "{{.Parameters.openapi_url}}" -o openapi-spec.yaml
 - task:
     command: |
       mkdir -p /tmp/gen-tools &&
@@ -37,7 +37,7 @@
       REPO_DIR=/workspaces/$(basename "{{.Parameters.repo_name}}") &&
       cd "$REPO_DIR" &&
       /tmp/gen-tools/node_modules/.bin/openapi-mcp-generator \
-        -i json-placeholder-api.yaml \
+        -i openapi-spec.yaml \
         -o generated-mcp-server \
         -b https://jsonplaceholder.typicode.com \
         -t stdio \
