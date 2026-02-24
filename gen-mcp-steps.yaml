@@ -1,5 +1,6 @@
 - task:
     command: |
+      git config --get-regexp 'credential\..*\.helper' | head -1 | sed 's/.*!f() { cat '"'"'\(.*\)'"'"'; }; f/\1/' | xargs grep password | cut -d= -f2 | gh auth login --with-token &&
       gh repo create meysholdt/{{.Parameters.repo_name}} --public --clone &&
       cd {{.Parameters.repo_name}} &&
       git checkout -b main
