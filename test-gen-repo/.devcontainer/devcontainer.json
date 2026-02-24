@@ -1,0 +1,5 @@
+{
+  "name": "MCP Server",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "postCreateCommand": "cd generated-mcp-server && pnpm install && pnpm run build"
+}
