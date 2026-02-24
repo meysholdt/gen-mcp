@@ -1,12 +1,13 @@
 - task:
     command: |
       git config --get-regexp 'credential\..*\.helper' | head -1 | sed 's/.*!f() { cat '"'"'\(.*\)'"'"'; }; f/\1/' | xargs grep password | cut -d= -f2 | gh auth login --with-token &&
+      cd /workspaces &&
       gh repo create meysholdt/{{.Parameters.repo_name}} --public --clone &&
       cd {{.Parameters.repo_name}} &&
       git checkout -b main
 - task:
     command: |
-      cd {{.Parameters.repo_name}} &&
+      cd /workspaces/{{.Parameters.repo_name}} &&
       mkdir -p .devcontainer &&
       cat > .devcontainer/devcontainer.json << 'EOF'
       {
@@ -20,7 +21,7 @@
       git push
 - task:
     command: |
-      cd {{.Parameters.repo_name}} &&
+      cd /workspaces/{{.Parameters.repo_name}} &&
       curl -fsSL https://raw.githubusercontent.com/stefanwille/openapi-generator-typescript-example/master/json-placeholder-api.yaml -o json-placeholder-api.yaml
 - task:
     command: |
@@ -30,7 +31,7 @@
       pnpm add openapi-mcp-generator
 - task:
     command: |
-      cd {{.Parameters.repo_name}} &&
+      cd /workspaces/{{.Parameters.repo_name}} &&
       /tmp/gen-tools/node_modules/.bin/openapi-mcp-generator \
         -i json-placeholder-api.yaml \
         -o generated-mcp-server \
@@ -39,21 +40,21 @@
         --force
 - task:
     command: |
-      cd {{.Parameters.repo_name}}/generated-mcp-server &&
+      cd /workspaces/{{.Parameters.repo_name}}/generated-mcp-server &&
       pnpm install &&
       pnpm run build
 - agent:
     prompt: |-
-      The MCP server has been generated and built in {{.Parameters.repo_name}}/generated-mcp-server/.
+      The MCP server has been generated and built in /workspaces/{{.Parameters.repo_name}}/generated-mcp-server/.
       Write and run a test script that verifies the server works:
       - Use @modelcontextprotocol/sdk to connect via StdioClientTransport
-      - The server binary is at {{.Parameters.repo_name}}/generated-mcp-server/build/index.js
+      - The server binary is at /workspaces/{{.Parameters.repo_name}}/generated-mcp-server/build/index.js
       - List tools and confirm getPosts and getPost exist
       - Call getPost with id=1 and confirm the response contains "Status: 200"
       - Print "All tests passed" on success, exit non-zero on failure
 - task:
     command: |
-      cd {{.Parameters.repo_name}} &&
+      cd /workspaces/{{.Parameters.repo_name}} &&
       echo "node_modules/" > .gitignore &&
       echo "build/" >> .gitignore &&
       git add -A &&
