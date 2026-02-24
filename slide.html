@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gen-mcp — OpenAPI to MCP Server</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0a0a0a;
+    color: #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .slide {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.4rem;
+    color: #fff;
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+    color: #888;
+    margin-bottom: 3.5rem;
+  }
+
+  .steps {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .step {
+    flex: 1;
+    position: relative;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 16px;
+    padding: 2rem 1.8rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .step:hover {
+    border-color: #404040;
+    box-shadow: 0 0 40px rgba(255,255,255,0.03);
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  .step:nth-child(1) .step-number { background: #1a1a2e; color: #818cf8; border: 1px solid #2d2d5e; }
+  .step:nth-child(2) .step-number { background: #1a2e1a; color: #6ee7b7; border: 1px solid #2d5e2d; }
+  .step:nth-child(3) .step-number { background: #2e1a1a; color: #fca5a5; border: 1px solid #5e2d2d; }
+
+  .step-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .step h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.6rem;
+  }
+
+  .step p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #999;
+  }
+
+  .step .params {
+    margin-top: 1rem;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: #6ee7b7;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .param-key { color: #818cf8; }
+  .param-val { color: #e5e5e5; }
+
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 0;
+    position: relative;
+  }
+
+  .connector::after {
+    content: '';
+    position: absolute;
+    width: 2rem;
+    left: -1rem;
+    height: 2px;
+    background: linear-gradient(90deg, #333, #555, #333);
+  }
+
+  .connector svg {
+    position: absolute;
+    z-index: 1;
+    left: -0.45rem;
+  }
+
+  @media (max-width: 800px) {
+    .steps { flex-direction: column; }
+    .connector { width: auto; height: 0; }
+    .connector::after {
+      width: 2px;
+      height: 2rem;
+      top: -1rem;
+      left: 50%;
+    }
+    .connector svg { top: -0.45rem; left: 50%; transform: rotate(90deg) translateX(-50%); }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <h1>gen-mcp</h1>
+  <p class="subtitle">OpenAPI spec in, MCP server repo out — fully automated.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <span class="step-icon">&#9654;</span>
+      <h2>Trigger</h2>
+      <p>A user starts the automation with two parameters: the target repo name and the OpenAPI spec URL.</p>
+      <div class="params">
+        <span class="param-key">repo_name</span> <span class="param-val">SE-demo/my-mcp-server</span><br>
+        <span class="param-key">openapi_url</span> <span class="param-val">https://…/api.yaml</span>
+      </div>
+    </div>
+
+    <div class="connector">
+      <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="0,0 14,7 0,14" fill="#555"/></svg>
+    </div>
+
+    <div class="step">
+      <div class="step-number">2</div>
+      <span class="step-icon">&#9881;</span>
+      <h2>Generate</h2>
+      <p>Ona creates a GitHub repo, generates the MCP server from the spec, builds it, and verifies it works. Progress is visible in real time.</p>
+    </div>
+
+    <div class="connector">
+      <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="0,0 14,7 0,14" fill="#555"/></svg>
+    </div>
+
+    <div class="step">
+      <div class="step-number">3</div>
+      <span class="step-icon">&#128230;</span>
+      <h2>Receive</h2>
+      <p>The user gets a ready-to-use Git repo with the MCP server code, a devcontainer, and a passing test — just clone and go.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
