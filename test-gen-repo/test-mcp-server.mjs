@@ -1,5 +1,13 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { createRequire } from "module";
+const require = createRequire(
+  new URL("./generated-mcp-server/package.json", import.meta.url)
+);
+const { Client } = await import(
+  require.resolve("@modelcontextprotocol/sdk/client/index.js")
+);
+const { StdioClientTransport } = await import(
+  require.resolve("@modelcontextprotocol/sdk/client/stdio.js")
+);
 import { fileURLToPath } from "url";
 import path from "path";
 

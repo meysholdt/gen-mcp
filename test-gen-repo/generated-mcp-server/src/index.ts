@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * MCP Server generated from OpenAPI spec for json-placeholder-api v1.0.0
- * Generated on: 2026-02-24T10:43:28.860Z
+ * Generated on: 2026-02-24T11:05:44.955Z
  */
 
 // Load environment variables from .env file
