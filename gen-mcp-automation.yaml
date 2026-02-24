@@ -11,15 +11,9 @@ action:
   steps:
     - task:
         command: |
-          GITHUB_TOKEN=$(git credential-helper github.com 2>/dev/null | grep password | cut -d= -f2)
-          if [ -z "$GITHUB_TOKEN" ]; then
-            GITHUB_TOKEN=$(git config --get-regexp 'credential\..*\.helper' | head -1 | sed 's/.*!f() { cat '"'"'\(.*\)'"'"'; }; f/\1/' | xargs grep password | cut -d= -f2)
-          fi
-          curl -fsSL -X POST https://api.github.com/user/repos \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -d '{"name":"{{.Parameters.repo_name}}","auto_init":true}' &&
-          git clone https://github.com/meysholdt/{{.Parameters.repo_name}}.git
+          gh repo create meysholdt/{{.Parameters.repo_name}} --public --clone &&
+          cd {{.Parameters.repo_name}} &&
+          git checkout -b main
     - task:
         command: |
           cd {{.Parameters.repo_name}} &&
