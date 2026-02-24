@@ -1,0 +1,66 @@
+- task:
+    command: |
+      curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - &&
+      sudo apt-get install -y nodejs &&
+      sudo corepack enable
+- task:
+    command: |
+      gh repo create meysholdt/{{.Parameters.repo_name}} --public --clone &&
+      cd {{.Parameters.repo_name}} &&
+      git checkout -b main
+- task:
+    command: |
+      cd {{.Parameters.repo_name}} &&
+      mkdir -p .devcontainer &&
+      cat > .devcontainer/devcontainer.json << 'DEVCONTAINER'
+      {
+        "name": "MCP Server",
+        "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+        "postCreateCommand": "cd generated-mcp-server && pnpm install && pnpm run build"
+      }
+      DEVCONTAINER
+      git add .devcontainer &&
+      git commit -m "Add devcontainer configuration" &&
+      git push -u origin main
+- task:
+    command: |
+      cd {{.Parameters.repo_name}} &&
+      curl -fsSL https://raw.githubusercontent.com/stefanwille/openapi-generator-typescript-example/master/json-placeholder-api.yaml -o json-placeholder-api.yaml
+- task:
+    command: |
+      cd {{.Parameters.repo_name}} &&
+      mkdir -p /tmp/gen-tools &&
+      cd /tmp/gen-tools &&
+      pnpm init &&
+      pnpm add openapi-mcp-generator
+- task:
+    command: |
+      cd {{.Parameters.repo_name}} &&
+      /tmp/gen-tools/node_modules/.bin/openapi-mcp-generator \
+        -i json-placeholder-api.yaml \
+        -o generated-mcp-server \
+        -b https://jsonplaceholder.typicode.com \
+        -t stdio \
+        --force
+- task:
+    command: |
+      cd {{.Parameters.repo_name}}/generated-mcp-server &&
+      pnpm install &&
+      pnpm run build
+- agent:
+    prompt: |-
+      The MCP server has been generated and built in {{.Parameters.repo_name}}/generated-mcp-server/.
+      Write and run a test script that verifies the server works:
+      - Use @modelcontextprotocol/sdk to connect via StdioClientTransport
+      - The server binary is at {{.Parameters.repo_name}}/generated-mcp-server/build/index.js
+      - List tools and confirm getPosts and getPost exist
+      - Call getPost with id=1 and confirm the response contains "Status: 200"
+      - Print "All tests passed" on success, exit non-zero on failure
+- task:
+    command: |
+      cd {{.Parameters.repo_name}} &&
+      echo "node_modules/" > .gitignore &&
+      echo "build/" >> .gitignore &&
+      git add -A &&
+      git commit -m "Add generated MCP server from OpenAPI spec" &&
+      git push origin main
